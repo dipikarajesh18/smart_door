@@ -66,14 +66,24 @@ def insert_into_passcodes(otp, faceId):
     exists = otp_table.query(IndexName='faceId-index', KeyConditionExpression=Key('faceId').eq(faceId))
     if len(exists['Items'])!=0:
         return False;
-    otp_table.put_item(
-        Item={
-            "ID": str(time.time()),
-            "faceId" : faceId,
-            "otp" : otp,
-            "ttl" : int(time.time() + 300)
-            }
-    )
+    if faceId=='owner':
+        otp_table.put_item(
+            Item={
+                "ID": str(time.time()),
+                "faceId" : faceId,
+                "otp" : otp,
+                "ttl" : int(time.time() + 60)
+                }
+        )
+    else:
+        otp_table.put_item(
+            Item={
+                "ID": str(time.time()),
+                "faceId" : faceId,
+                "otp" : otp,
+                "ttl" : int(time.time() + 300)
+                }
+        )
     return True;
     
 def send_otp(otp, faceId):
